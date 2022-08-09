@@ -5,6 +5,9 @@ Sample Microservice done in Python
 1. Open terminal in root directory
 2. Run 'pip install -r 'requirements.txt' to install dependant packages
 
+## Known Issues
+- When the logfile size limit is reached and it tries to rename the file to archive it fails saing the file is already being used by another process
+
 ## Feature Backlog
 - [x] Include rolling file logging
 - [x] Auto restore dependant libraries
