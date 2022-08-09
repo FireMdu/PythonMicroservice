@@ -24,7 +24,7 @@ class LogManager():
 
         file_name = f'{Locations.root_path()}/logs/app.log'
         file_handler = handlers.RotatingFileHandler(
-                file_name, maxBytes=40290,
+                file_name, maxBytes=10000000,
                 backupCount=20)
         
         file_handler.setLevel(logging.DEBUG)

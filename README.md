@@ -6,7 +6,7 @@ Sample Microservice done in Python
 2. Run 'pip install -r 'requirements.txt' to install dependant packages
 
 ## Known Issues
-- When the logfile size limit is reached and it tries to rename the file to archive it fails saing the file is already being used by another process
+- When the logfile size limit is reached and it tries to rename the file to archive it fails saing the file is already being used by another process (~10mb)
 
 ## Feature Backlog
 - [x] Include rolling file logging
