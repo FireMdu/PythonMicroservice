@@ -5,9 +5,11 @@ import logging
 
 from datetime import datetime
 from abc import ABC, abstractmethod
+from src.infrastructure.logger import LogManager
 
-class SchedulingBase(ABC):
-    logger = None
+logger = LogManager().logger
+
+class SchedulingBase(ABC):    
     _is_active = False
     schedule_manager = None
     last_run_time = None
@@ -15,9 +17,8 @@ class SchedulingBase(ABC):
     skipped_counter = None
     name = None
 
-    def __init__(self, name, logger: logging.Logger):        
+    def __init__(self, name):        
         self.name = name
-        self.logger = logger
 
     @abstractmethod # Implimented in the derived class
     def exec(self):
@@ -28,7 +29,7 @@ class SchedulingBase(ABC):
     def start(self, schedule_manager, frequency_in_seconds, future):
         
         try:
-            self.logger.info(f"Starting schedule {self.name}.")
+            logger.info(f"Starting schedule {self.name}.")
             if (self.schedule_manager is None):
                 self.schedule_manager = schedule_manager
 
@@ -44,18 +45,18 @@ class SchedulingBase(ABC):
                 yield from asyncio.sleep(frequency_in_seconds)
                 ## print(f"Tic complete for {self.name}")
 
-            self.logger.info(f"Schedule completed for {self.name}")
+            logger.info(f"Schedule completed for {self.name}")
             self.stop_schedule()
 
         except:
             ex = traceback.format_exc()
-            self.logger.error(f"Failed to do XXX. Error Details >> {ex}")
+            logger.error(f"Failed to do XXX. Error Details >> {ex}")
             raise # re-throw after writing error to screen 
         
 
     def stop(self):
         self._is_active = False
-        self.logger.info(f"Stopping [{self.name}]...")        
+        logger.info(f"Stopping [{self.name}]...")        
         self.schedule_manager.remove_schedule(self.name)
 
 

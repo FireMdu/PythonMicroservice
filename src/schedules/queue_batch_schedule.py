@@ -4,10 +4,12 @@ import time
 from src.schedules.common.schedule_batch_base import BatchScheduleBase
 from src.infrastructure.logger import LogManager
 
+logger = LogManager().logger
+
 class QueueBatchSchedule(BatchScheduleBase):
 
     def __init__(self, batch_size):
-        BatchScheduleBase.__init__(self, batch_size, type(self).__name__, LogManager.new(__name__))        
+        BatchScheduleBase.__init__(self, batch_size, type(self).__name__)        
 
     # Just for testing purposes
     def get_random_batch_size(self):

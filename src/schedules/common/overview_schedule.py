@@ -5,8 +5,10 @@ from src.infrastructure.logger import LogManager
 
 class OverviewSchedule(SchedulingBase):
 
+    logger = LogManager().logger
+
     def __init__(self):
-        SchedulingBase.__init__(self, type(self).__name__, LogManager.new(__name__))
+        SchedulingBase.__init__(self, type(self).__name__)
 
     def exec(self):
         os.system("cls")

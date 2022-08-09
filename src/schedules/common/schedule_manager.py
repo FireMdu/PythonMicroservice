@@ -1,7 +1,4 @@
 import threading
-from src.infrastructure.logger import LogManager
-
-logger = LogManager.new(__name__)
 
 class ScheduleManager():
     schedules = dict()

@@ -5,10 +5,12 @@ import time
 from src.schedules.common.schedule_base import SchedulingBase
 from src.infrastructure.logger import LogManager
 
+logger = LogManager().logger
+
 class CuckooSchedule(SchedulingBase):
 
     def __init__(self):
-        SchedulingBase.__init__(self, type(self).__name__, LogManager.new(__name__))
+        SchedulingBase.__init__(self, type(self).__name__)
 
     def exec(self):
        now = datetime.datetime.now()

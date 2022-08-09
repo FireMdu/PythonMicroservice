@@ -1,17 +1,17 @@
 import os
-import logging
 
 from abc import ABC, abstractmethod
 from src.schedules.common.schedule_base import SchedulingBase
 from src.infrastructure.logger import LogManager
 
+logger = LogManager().logger
+
 class BatchScheduleBase(SchedulingBase):
     _batch_size = None
     _batch = None
-    logger = None
 
-    def __init__(self, batch_size, name, logger: logging.Logger):
-        SchedulingBase.__init__(self, name, logger)
+    def __init__(self, batch_size, name):
+        SchedulingBase.__init__(self, name)
         self._batch_size = batch_size
 
     @abstractmethod
@@ -33,14 +33,14 @@ class BatchScheduleBase(SchedulingBase):
         self._batch = self.fetch_next_batch(size)       
 
         if self._batch is None:
-            self.logger.info('No items found to process')
+            logger.info('No items found to process')
             return
             
         if not isinstance(self._batch, list):
             raise ValueError(f'Did not return a valid list of items to be processed. List or None expected but {self._batch} was given.')
 
         os.system('cls')
-        self.logger.info(f'Starting a batch of [{size}] from the remaining [{remaining_items}]')
+        logger.info(f'Starting a batch of [{size}] from the remaining [{remaining_items}]')
 
         count = 0
 
@@ -48,5 +48,5 @@ class BatchScheduleBase(SchedulingBase):
             self.process_item(item)
             count += 1
             
-        self.logger.info(f'Batch done. [{count}] items processed, [{remaining_items - count}] remaining.')
+        logger.info(f'Batch done. [{count}] items processed, [{remaining_items - count}] remaining.')
 
