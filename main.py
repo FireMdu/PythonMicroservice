@@ -1,5 +1,5 @@
 from src.infrastructure.logger import LogManager
-from src.schedules.scheduler import Scheduler
+from src.distribution.schedules.scheduler import Scheduler
 
 logger = LogManager().logger
 

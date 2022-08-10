@@ -1,7 +1,7 @@
 import os
 
 from abc import ABC, abstractmethod
-from src.schedules.common.schedule_base import SchedulingBase
+from src.distribution.schedules.common.schedule_base import SchedulingBase
 from src.infrastructure.logger import LogManager
 
 logger = LogManager().logger

@@ -1,9 +1,9 @@
 import asyncio
 
-from src.schedules.common.schedule_manager import ScheduleManager
-from src.schedules.common.overview_schedule import OverviewSchedule
-from src.schedules.cuckoo_clock_schedule import CuckooSchedule
-from src.schedules.queue_batch_schedule import QueueBatchSchedule
+from src.distribution.schedules.common.schedule_manager import ScheduleManager
+from src.distribution.schedules.common.overview_schedule import OverviewSchedule
+from src.distribution.schedules.cuckoo_clock_schedule import CuckooSchedule
+from src.distribution.schedules.queue_batch_schedule import QueueBatchSchedule
 
 class Scheduler():
     schedule_manager = ScheduleManager()

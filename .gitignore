@@ -130,3 +130,6 @@ dmypy.json
 
 # Log files
 /logs/*
+
+#virtual environment
+/python_local/

@@ -1,6 +1,6 @@
 import os
 
-from src.schedules.common.schedule_base import SchedulingBase
+from src.distribution.schedules.common.schedule_base import SchedulingBase
 from src.infrastructure.logger import LogManager
 
 class OverviewSchedule(SchedulingBase):

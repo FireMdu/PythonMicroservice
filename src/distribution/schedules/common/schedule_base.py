@@ -1,7 +1,6 @@
 import asyncio
 import traceback
 import time
-import logging
 
 from datetime import datetime
 from abc import ABC, abstractmethod

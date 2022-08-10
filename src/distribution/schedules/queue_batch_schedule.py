@@ -1,7 +1,7 @@
 import random
 import time
 
-from src.schedules.common.schedule_batch_base import BatchScheduleBase
+from src.distribution.schedules.common.schedule_batch_base import BatchScheduleBase
 from src.infrastructure.logger import LogManager
 
 logger = LogManager().logger

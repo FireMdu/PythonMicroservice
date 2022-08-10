@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi_versioning import VersionedFastAPI
 
-from src.endpoints import book_api
+from src.distribution.api.endpoints import book_api
 
 class App:
     _title = "Python Microservice API Host Service"

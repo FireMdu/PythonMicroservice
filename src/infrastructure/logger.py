@@ -2,13 +2,12 @@ from cmath import log
 import logging
 import os
 import logging.handlers as handlers
-import logging
 import re
 
 from logging.handlers import TimedRotatingFileHandler
 from logging import config
-from src.common.locations import Locations
-from src.common.singleton_decorator import Singleton
+from src.infrastructure.locations import Locations
+from src.infrastructure.singleton_decorator import Singleton
 from enum import Enum
 
 class RollingFileMethod(Enum):
