@@ -9,7 +9,7 @@ Sample Microservice done in Python
 - [x] Include rolling file logging
 - [x] Auto restore dependant libraries
 - [ ] Hosted API's (Fast API)
-- [ ] Asyncronous Schedules (Asyncio)
+- [x] Asyncronous Schedules (Asyncio)
 - [ ] Unit Testing
 - [ ] Multiple threads (API, Schedules, etc)
 - [ ] ORM Data Access
