@@ -2,8 +2,7 @@
 Sample Microservice done in Python
 
 ## Setup Guide
-1. Open terminal in root directory
-2. Run 'pip install -r 'requirements.txt' to install dependant packages
+1. Run the script `.\setup.ps1` in the root of the folder (It will create a virtual env and install required packages)
 
 ## Feature Backlog
 - [x] Include rolling file logging
