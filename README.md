@@ -17,7 +17,7 @@ Library  | Description | External Content
 ## Feature Backlog
 - [x] Include rolling file logging
 - [x] Auto restore dependant libraries
-- [ ] Hosted API's (Fast API)
+- [x] Hosted API's (Fast API)
 - [x] Asyncronous Schedules (Asyncio)
 - [ ] Unit Testing
 - [ ] Multiple threads (API, Schedules, etc)
