@@ -9,8 +9,8 @@ Sample Microservice done in Python
 ### API Server
 Library  | Description | External Content
 ------------- | ------------- | -------------
-FastAPI | Define your API Services | [Official Documentation](https://fastapi.tiangolo.com/)
-Uvicorn  | Web Server | [Main Website](https://www.uvicorn.org/)
+[FastAPI](https://fastapi.tiangolo.com) | Design and document APIs | [Introduction]() > [Deep Dive]()
+[Uvicorn](https://www.uvicorn.org/) | Web Server | [Introduction]() > [Deep Dive]()
 
 
 ## Feature Backlog
