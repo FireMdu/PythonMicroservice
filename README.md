@@ -9,7 +9,7 @@ Sample Microservice done in Python
 ### API Server
 Library  | Description | External Content
 ------------- | ------------- | -------------
-[FastAPI](https://fastapi.tiangolo.com) | Design and document APIs | [Introduction]() > [Deep Dive]()
+[FastAPI](https://fastapi.tiangolo.com) | Design and document APIs | [Introduction](https://blog.devgenius.io/brief-introduction-to-fastapi-d6f25793b11a) > [Deep Dive]()
 [Uvicorn](https://www.uvicorn.org/) | Web Server | [Introduction]() > [Deep Dive]()
 
 
