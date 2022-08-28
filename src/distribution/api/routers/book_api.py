@@ -1,5 +1,3 @@
-# more details: https://www.tutorialsbuddy.com/python-fastapi-bigger-applications-multiple-separate-files
-
 from uuid import uuid4
 from fastapi import APIRouter
 from fastapi import Query

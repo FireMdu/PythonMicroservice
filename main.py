@@ -7,9 +7,13 @@ logger = LogManager().logger
 def main():
     logger.info('Starting microservice...')
 
-    # Starting Schedules
+    # Schedule Thread
     # Scheduler().start()
+
+    # API Thread
     AppManager().start()
+
+    
 
 
 main()
