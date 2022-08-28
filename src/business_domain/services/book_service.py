@@ -1,4 +1,4 @@
-from src.business_layer.models.book import Book
+from src.business_domain.models.book import Book
 
 class BookService:
 

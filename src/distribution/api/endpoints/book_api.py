@@ -5,12 +5,12 @@ from fastapi import APIRouter
 from fastapi import Query
 from typing import Optional
 
-from src.business_layer.models.book import Book
-from src.business_layer.services.book_service import BookService
+from src.business_domain.models.book import Book
+from src.business_domain.services.book_service import BookService
 
 service = BookService()
 
-#APIRouter creates path operations for user module
+#API Router creates path operations for user module
 router = APIRouter(
     prefix="/books",
     tags=["Book"],
