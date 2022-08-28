@@ -24,7 +24,7 @@ class LogManager(metaclass=Singleton):
         def logger(self) -> logging.Logger:
                 return self._logger
 
-        def register_rolling_file_handler_daily(self, file_name):
+        def create_rolling_file_handler_daily(self, file_name):
                 log_file_daily_path = f'{Locations.root_path()}/logs/{file_name}.log'
                 handler = TimedRotatingFileHandler(
                         filename=log_file_daily_path,
@@ -38,7 +38,7 @@ class LogManager(metaclass=Singleton):
 
                 return handler
 
-        def register_rolling_file_handler_by_size(self, file_name):
+        def create_rolling_file_handler_by_size(self, file_name):
                 log_file_size_path = f'{Locations.root_path()}/logs/{file_name}.log'
                 handler = handlers.RotatingFileHandler(
                         log_file_size_path, 
@@ -49,14 +49,21 @@ class LogManager(metaclass=Singleton):
 
                 return handler
 
+        def create_console_handler(self):
+                handler = logging.StreamHandler()
+                handler.setLevel(logging.INFO)
+                return handler
+
 
         def __init__(self) -> None:
 
                 self._logger = logging.getLogger()
                 self._logger.setLevel(logging.INFO) ## Only log entries from this level or higher
 
+                self._logger.addHandler(self.create_console_handler())
+
                 if (self._rolling_file_method == RollingFileMethod.ByMaxSize):
-                        self._logger.addHandler(self.register_rolling_file_handler_by_size(self._name))
+                        self._logger.addHandler(self.create_rolling_file_handler_by_size(self._name))
 
                 if (self._rolling_file_method == RollingFileMethod.Daily):
-                        self._logger.addHandler(self.register_rolling_file_handler_daily(self._name))
+                        self._logger.addHandler(self.create_rolling_file_handler_daily(self._name))
