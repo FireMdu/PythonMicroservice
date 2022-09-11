@@ -37,8 +37,10 @@ class App:
 class AppManager():
     _host = '127.0.0.1'
     _port = 8000
+    thread_manager = None
 
-    def start(self):
+    def start(self, thread_manager):
+        self.thread_manager = thread_manager
         app = App()
         logger.info(f'Loading and starting API Service {app}')
 

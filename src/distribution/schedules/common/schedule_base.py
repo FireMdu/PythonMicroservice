@@ -27,9 +27,8 @@ class SchedulingBase(ABC):
     def exec(self):
         pass    
  
-    @asyncio.coroutine
     ## This starts an schedule that will based on intervals execute the next one
-    def start(self, schedule_manager, frequency_in_seconds, future):
+    async def start(self, schedule_manager, frequency_in_seconds):
         
         try:
             logger.info(f"Starting schedule {self.name}.")
@@ -50,9 +49,8 @@ class SchedulingBase(ABC):
                     logger.info(f'Completed schedule for {self.name} in {self.stopwatch.elapsed_time_in_seconds()}s')
                 except Exception as ex:
                     logger.error(f"Error {ex.__class__} occurred for [{self.name}] after {self.stopwatch.stop_failure().elapsed_time_in_seconds()}s while executing schedule. Details: {ex}") 
-
   
-                yield from asyncio.sleep(frequency_in_seconds)
+                await asyncio.sleep(frequency_in_seconds)
 
             logger.info(f"Schedule {self.name} is now stopping")
             self.stop_schedule()
