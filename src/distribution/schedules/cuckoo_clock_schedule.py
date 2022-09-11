@@ -1,5 +1,5 @@
-import datetime
-import os
+from datetime import datetime
+from multiprocessing.resource_sharer import stop
 import time
 
 from src.distribution.schedules.common.schedule_base import SchedulingBase
@@ -13,14 +13,13 @@ class CuckooSchedule(SchedulingBase):
         SchedulingBase.__init__(self, type(self).__name__)
 
     def exec(self):
-       now = datetime.datetime.now()
-       os.system('cls')
-       print("The clock opens...") 
-       clock_says =  ''     
-       for i in range(now.hour):
-           clock_says += 'Cuckoo '
+        print("The clock opens...") 
+        clock_says =  ''     
+        
+        for i in range(datetime.now().hour):
+            clock_says += 'Cuckoo '
 
-       print(f"{clock_says}")
-       last_run = "N/A" if self.last_run_time is None else self.last_run_time.strftime("%Y-%m-%d %H:%M:%S")
-       print(f"The clock closes. Last time it opened was {last_run}")
-       time.sleep(2)
+        print(f"{clock_says}")
+
+        print(f"The clock closes. Last time it opened was {self.stopwatch.get_last_successfull_run_time()}")
+        time.sleep(2)

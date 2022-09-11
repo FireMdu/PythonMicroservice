@@ -4,20 +4,24 @@ import time
 
 from datetime import datetime
 from abc import ABC, abstractmethod
+from src.infrastructure.stopwatch import Stopwatch
 from src.infrastructure.logger import LogManager
+from src.infrastructure.stopwatch import Stopwatch
 
 logger = LogManager().logger
 
 class SchedulingBase(ABC):    
     _is_active = False
     schedule_manager = None
-    last_run_time = None
-    last_run_duration = None
+    stopwatch = None
+    # last_run_time = None
+    # last_run_duration = None
     skipped_counter = None
     name = None
 
     def __init__(self, name):        
         self.name = name
+        self.stopwatch = Stopwatch()
 
     @abstractmethod # Implimented in the derived class
     def exec(self):
@@ -36,22 +40,26 @@ class SchedulingBase(ABC):
             self._is_active = True
 
             while self._is_active:
-                start = time.time()
-                self.exec()
-                self.last_run_time = datetime.now()
-                completed = time.time()
-                self.last_run_duration = completed - start
-                yield from asyncio.sleep(frequency_in_seconds)
-                ## print(f"Tic complete for {self.name}")
+                self.stopwatch.start()
 
-            logger.info(f"Schedule completed for {self.name}")
+                try:
+                    self.exec()
+
+                    self.stopwatch.stop_success()                
+
+                    logger.info(f'Completed schedule for {self.name} in {self.stopwatch.elapsed_time_in_seconds()}s')
+                except Exception as ex:
+                    logger.error(f"Error {ex.__class__} occurred for [{self.name}] after {self.stopwatch.stop_failure().elapsed_time_in_seconds()}s while executing schedule. Details: {ex}") 
+
+  
+                yield from asyncio.sleep(frequency_in_seconds)
+
+            logger.info(f"Schedule {self.name} is now stopping")
             self.stop_schedule()
 
-        except:
-            ex = traceback.format_exc()
-            logger.error(f"Failed to do XXX. Error Details >> {ex}")
-            raise # re-throw after writing error to screen 
-        
+        except Exception as ex:
+            logger.error(f"Error {ex.__class__} occurred for [{self.name}]. Details: {ex}") 
+            raise # re-throw after writing error to screen        
 
     def stop(self):
         self._is_active = False

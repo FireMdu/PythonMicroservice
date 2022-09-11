@@ -35,6 +35,6 @@ class QueueBatchSchedule(BatchScheduleBase):
         return batch
 
     def process_item(self, item):
-        print(f'Item processed. Value [{item}]')
+        # Placeholder for item logic
         time.sleep(0.05)
 

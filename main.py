@@ -8,10 +8,10 @@ def main():
     logger.info('Starting microservice...')
 
     # Schedule Thread
-    # Scheduler().start()
+    Scheduler().start()
 
     # API Thread
-    AppManager().start()
+    # AppManager().start()
 
     
 
