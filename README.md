@@ -34,7 +34,7 @@ Library  | Description | External Content
 - [x] Hosted API's (Fast API)
 - [x] Asyncronous Schedules (Asyncio)
 - [ ] Unit Testing
-- [ ] Multiple threads (API, Schedules, etc)
+- [x] Multiple threads (API, Schedules, etc)
 - [ ] Stress Testing (API Calls, Large Batches)
 - [ ] ORM Data Access
 - [ ] Proxy API Proxies (Request)
