@@ -9,16 +9,18 @@ logger = LogManager().logger
 class QueueBatchSchedule(BatchScheduleBase):
 
     def __init__(self, batch_size):
-        BatchScheduleBase.__init__(self, batch_size, type(self).__name__)        
+        BatchScheduleBase.__init__(self, batch_size, type(self).__name__, 3)        
 
     # Just for testing purposes
     def get_random_batch_size(self):
-        value = random.randint(1, 3)
+        value = random.randint(1, 5)
 
         switcher = {
             1:  15,
             2:  45,
             3:  5,
+            4:  60,
+            5:  50
         }
 
         return switcher.get(value, 0)
