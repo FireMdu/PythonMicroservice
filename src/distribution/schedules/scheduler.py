@@ -11,7 +11,7 @@ class Scheduler():
 
     cuckoo = CuckooSchedule()
     overview = OverviewSchedule()
-    queue_batch = QueueBatchSchedule(20)
+    queue_batch = QueueBatchSchedule(80) # Batch Size
 
     async def register_schedules(self):
         asyncio.ensure_future(self.cuckoo.start(self.schedule_manager, 12))

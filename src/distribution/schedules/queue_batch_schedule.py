@@ -9,7 +9,11 @@ logger = LogManager().logger
 class QueueBatchSchedule(BatchScheduleBase):
 
     def __init__(self, batch_size):
-        BatchScheduleBase.__init__(self, batch_size, type(self).__name__, 3)        
+        BatchScheduleBase.__init__(self, 
+            batch_size = batch_size, 
+            name = type(self).__name__, 
+            concurrent_threads = 3, 
+            thread_queue_size = 10)        
 
     # Just for testing purposes
     def get_random_batch_size(self):
@@ -20,7 +24,7 @@ class QueueBatchSchedule(BatchScheduleBase):
             2:  45,
             3:  5,
             4:  60,
-            5:  50
+            5:  125
         }
 
         return switcher.get(value, 0)

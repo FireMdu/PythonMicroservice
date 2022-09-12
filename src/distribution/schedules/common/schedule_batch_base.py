@@ -13,15 +13,16 @@ logger = LogManager().logger
 
 class Outcome(Enum):
     Unkown = 0
-    Pending = 2
-    Success = 3
-    Failure = 4
+    Pending = 1
+    Success = 2
+    Failure = 3
 
 class Counters():
     pending = 0
     successfull = 0
     failed = 0
     remaining = 0
+    processed = 0
     total_processing_time = 0
 
     def __init__(self, pending, remaining) -> None:
@@ -32,14 +33,15 @@ class BatchScheduleBase(SchedulingBase):
     _batch_size = None
     _batch = None
     _concurrent_threads = None
-    _thread_queue_size = 10
+    _thread_queue_size = None
     _mutex = Lock()
 
-    def __init__(self, batch_size, name, concurrent_threads = 1):
+    def __init__(self, batch_size, name, concurrent_threads = 1, thread_queue_size = 10):
         SchedulingBase.__init__(self, name)
         self._batch_size = batch_size
         self.stopwatch = Stopwatch()
         self._concurrent_threads = concurrent_threads
+        self._thread_queue_size = thread_queue_size
 
     def get_queue_batch(self, number_of_items):
         queue = []
@@ -77,6 +79,7 @@ class BatchScheduleBase(SchedulingBase):
                 counters.failure += 1
             counters.pending -= 1
             counters.remaining -= 1
+            counters.processed += 1
             counters.total_processing_time += stopwatch_thread.stop_success().elapsed_time_in_seconds()
             self._mutex.release()
 
@@ -123,7 +126,7 @@ class BatchScheduleBase(SchedulingBase):
             raise ValueError(f'Did not return a valid list of items to be processed. List or None expected but {self._batch} was given.')
 
         os.system('cls')
-        print(f'Starting a new batch of [{size}] for [{self.name}] out of the remaining [{remaining_items}] items')
+        logger.info(f'Starting a new batch of [{size}] for [{self.name}] out of the remaining [{remaining_items}] items')
 
         counters = Counters(size, remaining_items)
 
@@ -131,8 +134,7 @@ class BatchScheduleBase(SchedulingBase):
         empty_batch = (size == 0)
         threads = []
 
-        #TODO: Recycle threads up to the max concurrent specified: The remainder fails
-        while not empty_batch and thread_count < self._concurrent_threads:
+        while not empty_batch:
             thread_count += 1
 
             thread_queue = self.get_queue_batch(self._thread_queue_size)
@@ -141,12 +143,25 @@ class BatchScheduleBase(SchedulingBase):
             empty_batch = (len(self._batch) == 0)
             threads.append(thread)
             thread.start()
-           
-        
+
+            logger.info(f'Added a thread to process batch [{len(threads)}/{self._concurrent_threads}]')
+
+            while (not empty_batch and len(threads) == self._concurrent_threads):
+                time.sleep(2)
+
+                for i in range(len(threads)-1, -1, -1):
+                    thread_iterate = threads[i]
+                    if not thread_iterate.is_alive():                        
+                        threads.remove(thread_iterate)
+                        logger.info(f'Removed completed thread position [{i}]. Threads in use [{len(threads)}/{self._concurrent_threads}]')        
+
+
         # Wait for all threads to complete
         for thread in threads:
             thread.join()                       
 
-        logger.info(f'Batch for {self.name} done. [{counters.successfull + counters.failed}] items processed in {self.stopwatch.stop_success().elapsed_time_in_seconds()}s (Succeeded=[{counters.successfull}] Failed=[{counters.remaining}]) {counters.total_processing_time - self.stopwatch.stop_success().elapsed_time_in_seconds()}s faster than processing time.')
+        logger.info(f'Batch for {self.name} done. [{counters.successfull + counters.failed}] items processed in {self.stopwatch.stop_success().elapsed_time_in_seconds()}s (Succeeded=[{counters.successfull}] Failed=[{counters.failed}] Remaining=[{counters.remaining}]) {counters.total_processing_time - self.stopwatch.stop_success().elapsed_time_in_seconds()}s gain with parallelism.')
         logger.info('')
-        # time.sleep(20)
+        
+        if (size != counters.processed or (counters.successfull + counters.failed) != counters.processed):
+            logger.error(f'Batch for {self.name} failed post run counts. Expected [Batch Size-{size}] == [Processed={counters.processed}] and [Success-{counters.successfull} + Failed-{counters.failed}] == [Processed={counters.processed}]')
