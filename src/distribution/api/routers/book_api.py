@@ -3,8 +3,8 @@ from fastapi import APIRouter
 from fastapi import Query
 from typing import Optional
 
-from src.business_domain.models.book import Book
-from src.business_domain.services.book_service import BookService
+from src.application.models.book import Book
+from src.application.services.book_service import BookService
 
 service = BookService()
 
