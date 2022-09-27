@@ -1,6 +1,8 @@
 # PythonMicroservice
 Sample Microservice done in Python
 
+![image](https://user-images.githubusercontent.com/2478826/192550186-33d45858-6f77-44ee-9fb1-0b0941e5b188.png)
+
 ## Setup Guide
 1. Run the script `.\setup.ps1` in the root of the folder (It will create a virtual env and install required packages)
 
