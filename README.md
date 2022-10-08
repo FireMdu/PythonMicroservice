@@ -30,14 +30,20 @@ Library  | Description | External Content
 ------------- | ------------- | -------------
 [Flask](https://flask.palletsprojects.com/en/2.2.x/) | Micro Web Framework | [Introduction]() > [Deep Dive]()
 
+## Included
+- [X] Dependancy setup using requirements.txt
+- [X] Rolling file logging with console output
+- [X] Seperate application threads (API, Schedules, etc)
+- [X] Asyncronous & Multi-Threaded Schedules
+- [X] Swagger Documented API's (FastAPI)
+
 ## Feature Backlog
-- [x] Include rolling file logging
-- [x] Auto restore dependant libraries
-- [x] Hosted API's (Fast API)
-- [x] Asyncronous Schedules (Asyncio)
+- [ ] Thread isolated logging
 - [ ] Unit Testing
-- [x] Multiple threads (API, Schedules, etc)
 - [ ] Stress Testing (API Calls, Large Batches)
 - [ ] ORM Data Access
 - [ ] Proxy API Proxies (Request)
-- [ ] Azure DevOps hosted in Linux container
+- [ ] Azure DevOps hosted on Linux container
+- [ ] Database Migrations (CI/CD)
+- [ ] Web System Health Page
+
