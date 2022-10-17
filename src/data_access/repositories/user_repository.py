@@ -3,11 +3,10 @@ from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import MultipleResultsFound
 
-from src.application.common import schemas as scm
-from src.application.common import enumerations as enums
 from src.data_access.database.models.users import UserEntity
 from src.data_access.database.models.user_type_entity import UserTypeEntity
-from src.application.models.library_management.user import User, UserInDatabase
+from src.common.models.library_management. user import user_types as enum_typ
+from src.common.models.library_management.user import User, UserInDatabase, UserType
 from src.data_access.repositories.base_repository import SqlAlchemyRelationalRepositoryBase
 
 __all__ = [
@@ -22,9 +21,12 @@ class UserSqlAlchemyRelationalRepository(SqlAlchemyRelationalRepositoryBase):
     def __init__(self, context: Session) -> None:
         super().__init__(context=context)
 
-    def add(self, user_type: enums.user_types.UserTypes, *args, **kwargs) -> Optional[User]:
-        user_model = UserInDatabase.parse_obj(kwargs)
-        user_type = UserTypeEntity(**scm.UserType(user_type=user_type).dict())
+    def add(self, *args, **kwargs) -> Optional[User]:
+        raise NotImplementedError("Must be implemented by the specific user type subclass.")
+
+    def add_user(self, user_type: enum_typ.UserTypes, **kwargs):
+        user_model: UserInDatabase = UserInDatabase.parse_obj(kwargs)
+        user_type = UserTypeEntity(**UserType(user_type=user_type).dict())
         db_user_type_query = self.context.query(UserTypeEntity)
         db_user_type = db_user_type_query.filter(UserTypeEntity.user_type == user_type.user_type).first()
         if db_user_type is not None:

@@ -6,10 +6,12 @@ from fastapi_versioning import version
 
 from src.data_access.context import ServiceContext
 from src.data_access.database import SqlAlchemyContext
-from src.application.models import User, UserInDatabase
-from src.services.library_management import UserService
-from src.application.common import enumerations as enums
-from src.data_access.repositories import UserSqlAlchemyRelationalRepository, RepositoryBase
+from src.data_access.repositories.base_repository import RepositoryBase
+from src.application.services.library_management import UserService
+from src.common.models.library_management.user import User, UserInDatabase
+from src.data_access.repositories.user_repository import UserSqlAlchemyRelationalRepository
+from src.data_access.repositories.student_repository import StudentUserSqlAlchemyRelationalRepository
+from src.data_access.repositories.staff_repository import StaffUserSqlAlchemyRelationalRepository
 
 
 Repository = TypeVar("Repository", bound=RepositoryBase)
@@ -48,8 +50,8 @@ async def post_student(
         path_dependency: PathDependency = Depends(sqlalchemy_dependency)
 ):
     with path_dependency.context.get_context() as context:
-        user_repository = UserSqlAlchemyRelationalRepository(context=context)
-        student = UserService.post_user(repository=user_repository, user_type=enums.UserTypes.student, **student.dict())
+        user_repository = StudentUserSqlAlchemyRelationalRepository(context=context)
+        student = UserService.post_user(repository=user_repository, **student.dict())
         return User.parse_obj(student.dict())
 
 
@@ -60,8 +62,8 @@ async def post_staff(
         path_dependency: PathDependency = Depends(sqlalchemy_dependency)
 ):
     with path_dependency.context.get_context() as context:
-        user_repository = UserSqlAlchemyRelationalRepository(context=context)
-        staff = UserService.post_user(repository=user_repository, user_type=enums.UserTypes.staff, **staff.dict())
+        user_repository = StaffUserSqlAlchemyRelationalRepository(context=context)
+        staff = UserService.post_user(repository=user_repository, **staff.dict())
         return User.parse_obj(staff.dict())
 
 

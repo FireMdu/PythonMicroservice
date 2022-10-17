@@ -3,7 +3,7 @@ from typing import Optional, Union
 from sqlalchemy.exc import MultipleResultsFound
 from sqlalchemy.orm import Session
 
-from src.application.models import Account, User
+from src.common.models import Account, User
 from src.data_access.database import AccountEntity
 from src.data_access.repositories.base_repository import SqlAlchemyRelationalRepositoryBase
 

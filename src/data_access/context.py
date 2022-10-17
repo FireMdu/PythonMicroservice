@@ -1,6 +1,6 @@
-import contextlib
 from typing import TypeVar
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 
 __all__ = [
     "ServiceContext"
@@ -15,7 +15,7 @@ class ServiceContext(ABC):
     def __init__(self, context: Context) -> None:
         self.context = context
 
-    @contextlib.contextmanager
+    @contextmanager
     def get_context(self):
         try:
             yield self.context
