@@ -1,0 +1,101 @@
+@startuml
+' Some rendering settings
+skinparam LineType Ortho
+skinparam Roundcorner 20
+skinparam shadowing true
+skinparam background {
+    Color #F1F4FFFF
+}
+skinparam class {
+BackgroundColor #002D55FF
+ArrowColor #F47983
+BorderColor #ADEFD1FF
+AttributeFontName Candara
+AttributeFontStyle Italic
+FontColor  #DFDCE5FF
+BorderThickness 0.25
+}
+
+' some class definitions
+class InoversityLibraryManagementSystem {
+    user_name: str
+    user_password: str
+    login()
+    register()
+    logout()
+}
+
+' these classes will be grouped together
+together {
+class Staff {
+    staff_number: str
+    department: str
+    job_title: str
+}
+
+class Student {
+    student_number: str
+    faculty: str
+    school: str
+    programme: str
+    courses: str
+}
+
+class User {
+    first_name: str
+    last_name: str
+    id: str
+    role_level: str
+    password: str
+    verify()
+    check_account()
+    get_documents()
+}
+}
+
+together {
+class Account {
+    loaned_documents: list[str]
+    reserved_documents: list[str]
+    returned_documents: list[str]
+    lost_documents: list[str]
+    fine_amount: int
+    calculate_fine()
+}
+
+class LibraryDatabase {
+    add()
+    delete()
+    update()
+    display()
+    search()
+}
+
+class Document {
+    doc_title: str
+    author: str
+    publication: strs
+    reservation_status()
+    doc_request()
+    doc_feedback()
+    review_info()
+    show_due_date()
+}
+}
+
+' entity relationships
+InoversityLibraryManagementSystem "1" *.. "*" User
+
+LibraryDatabase "1" *. "*" Document
+
+User "1" ..o "1" Account
+
+LibraryDatabase "1" *.left. "*" Account
+
+Document "*" .up.* "*" Account
+
+User -left-> Student
+
+User -right-> Staff
+
+@enduml

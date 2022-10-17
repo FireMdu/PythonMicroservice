@@ -1,0 +1,117 @@
+@startuml
+' Some rendering settings
+skinparam linetype polyline
+skinparam linetype ortho
+skinparam backgroundColor DarkSlateGrey
+skinparam classFontColor dimgrey
+skinparam sequenceMessageAlign direction
+skinparam roundcorner 20
+skinparam class {
+BackgroundColor MintCream
+ArrowColor IndianRed
+BorderColor IndianRed
+}
+
+
+class InoversityLibraryManagementSystem {
+    user_name: str
+    user_password: str
+    login()
+    register()
+    logout()
+}
+
+class Staff {
+    staff_number: str
+    department: str
+    job_title: str
+}
+
+class Student {
+    student_number: str
+    faculty: str
+    school: str
+    programme: str
+    courses: str
+}
+
+together {
+class User {
+    first_name: str
+    last_name: str
+    user_name: str
+    user_id: str
+    role: str
+    user_password: str
+    verify()
+    check_account()
+    get_documents()
+}
+
+class Directory {
+    directory_id: str
+    available_quantity()
+    available_document_copies()
+    allocate()
+}
+
+class Librarian {
+    outstanding_documents()
+}
+}
+
+together {
+class Account {
+    borrowed_documents_count: int
+    reserved_documents_count: int
+    returned_documents_count: int
+    lost_documents_count: int
+    fine_amount: int
+    calculate_fine()
+}
+
+class LibraryDatabase {
+    list_of_documents: list
+    add()
+    delete()
+    update()
+    display()
+    search()
+}
+}
+
+class Document {
+    doc_title: str
+    author: str
+    publication: strs
+    reservation_status()
+    doc_request()
+    doc_feedback()
+    review_info()
+    show_due_date()
+}
+
+InoversityLibraryManagementSystem "1" *--- "*" User
+
+InoversityLibraryManagementSystem "1" *-- "*" Directory
+
+Directory "1" *-- "*" Document
+
+InoversityLibraryManagementSystem "1" *-- "*" Librarian
+
+User "1" *-- "1" Account
+
+Librarian "1" *-down- "1" LibraryDatabase
+
+LibraryDatabase "1" *-right- "*" Document
+
+LibraryDatabase "1" *-left- "*" Account
+
+User -left-> Student
+
+User -left-> Staff
+
+Staff -[hidden]- Student
+
+Librarian <-left- User
+@enduml

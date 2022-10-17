@@ -8,6 +8,7 @@ from src.infrastructure.thread_manager import ThreadManager, ThreadType
 
 logger = LogManager().logger
 
+
 def main():
     logger.info('Starting microservice...')
 
@@ -16,21 +17,20 @@ def main():
     # Start Scheduler on its own thread
     scheduler = Scheduler()
     scheduler_thread = Thread(target=scheduler.start,args=(thread_manager,))    
-    thread_manager.add_update_thread(type=ThreadType.Scheduler, thread=scheduler_thread)
+    thread_manager.add_update_thread(thread_type=ThreadType.Scheduler, thread=scheduler_thread)
     scheduler_thread.start()
 
     # Start API on its own Thread
     app_manager = AppManager()
-    api_thread = Thread(target=app_manager.start,args=(thread_manager,))    
-    thread_manager.add_update_thread(type=ThreadType.API, thread=api_thread)
+    api_thread = Thread(target=app_manager.start, args=(thread_manager,))
+    thread_manager.add_update_thread(thread_type=ThreadType.API, thread=api_thread)
     api_thread.start()
 
     while thread_manager.has_active_threads():
-        #TODO: check thread health and recover if neccecary
+        # TODO: check thread health and recover if necessary
         time.sleep(5)
-    
-    print('All threads have executed, application shutting down')    
+    logger.info("Microservice stopped")
 
 
-main()
-
+if __name__ == '__main__':
+    main()
