@@ -133,3 +133,6 @@ dmypy.json
 
 #virtual environment
 /python_local/
+
+# ide settings
+/.idea
