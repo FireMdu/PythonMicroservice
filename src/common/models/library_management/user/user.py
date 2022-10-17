@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Optional, List, Union, Mapping, Any, AbstractSet, Dict
+from typing import Optional, List, Union, Mapping, Any, AbstractSet, Dict, Type
 
-from pydantic import BaseModel
-
-from src.application.models.library_management.account import Account
-from src.application.models.library_management.document import Document
+from src.common.models.library_management.account import Account
+from src.common.models.library_management.base_model import AbstractDomainModel
+from src.common.models.library_management.document import Document
 
 __all__ = [
     "User",
@@ -21,19 +21,13 @@ DictStrAny = Dict[str, Any]
 MappingIntStrAny = Mapping[IntStr, Any]
 
 
-class UserBase(BaseModel, ABC):
+class UserBase(AbstractDomainModel, ABC):
     """
     Represents a user model and all the behaviours to be associated with a user type object.
-    Any behaviours or attributes that are defined by pydantic's BaseModel and are used
-    in the child classes should preferably be overwritten in this class. See the 'from_orm' and
-    'dict' methods.
     """
     first_name: str
     last_name: str
     email_address: str
-
-    class Config:
-        orm_mode = True
 
     def __hash__(self):
         return hash(self.user_identifier)
@@ -44,8 +38,12 @@ class UserBase(BaseModel, ABC):
         return False
 
     @classmethod
-    def from_orm(cls, obj):
+    def from_orm(cls, obj) -> UserBase:
         return super().from_orm(obj=obj)
+
+    @classmethod
+    def parse_obj(cls: Type[UserBase], obj: Any) -> Union[UserBase, AbstractDomainModel]:
+        return super().parse_obj(obj=obj)
 
     def dict(
         self,

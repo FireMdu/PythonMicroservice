@@ -2,8 +2,8 @@ import json
 import traceback
 from pathlib import Path
 
-from src.application.common.schemas.globalConfiguration.configuration import GlobalConfiguration
 from src.app_definitions import PACKAGE_SOURCE_DIR
+from src.common.config.global_config.schemas import GlobalConfiguration
 
 __all__ = [
     "GlobalConfigurationManager"
@@ -11,9 +11,9 @@ __all__ = [
 
 
 class GlobalConfigurationManager:
-    _global_configuration_filename = "globalConfiguration.json"
+    _global_configuration_filename = "global_configuration.json"
 
-    def __init__(self, *, config_sub_directory_name: str = r"application\common\config\globalConfig") -> None:
+    def __init__(self, *, config_sub_directory_name: str = r"common\config\global_config") -> None:
         self.config_sub_directory: str = config_sub_directory_name
         self.configuration: GlobalConfiguration = self.get_configuration()
 

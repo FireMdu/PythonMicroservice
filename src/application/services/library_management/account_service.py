@@ -1,9 +1,7 @@
 from typing import List
 
-from pydantic import BaseModel
-
-from src.application.models import Account
-from src.services.library_management.student_service import ModelsService
+from src.common.models.library_management.account import Account
+from src.application.abstract_domain_service import AbstractDomainService
 from src.data_access.repositories.base_repository import SqlAlchemyRelationalRepositoryBase
 
 __all__ = [
@@ -11,8 +9,8 @@ __all__ = [
 ]
 
 
-class AccountService(ModelsService):
-    def __init__(self):
+class AccountService(AbstractDomainService):
+    def __init__(self) -> None:
         super().__init__()
 
     @staticmethod
@@ -20,6 +18,6 @@ class AccountService(ModelsService):
         return repository.list(*args, **kwargs)
 
     @staticmethod
-    def post_an_account(repository: SqlAlchemyRelationalRepositoryBase, user, *args, **kwargs) -> BaseModel:
-        account = repository.add(*args, user=user, **kwargs)
+    def post_an_account(repository: SqlAlchemyRelationalRepositoryBase, *args, **kwargs) -> Account:
+        account = repository.add(*args, **kwargs)
         return account

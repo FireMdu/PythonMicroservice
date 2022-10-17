@@ -13,14 +13,14 @@ class LoanLine(BaseModel):
     loan_reference: str
     document_id: str
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.loan_line_identifier)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, LoanLine):
             return other.loan_reference == self.loan_line_identifier
         return False
 
     @property
-    def loan_line_identifier(self):
+    def loan_line_identifier(self) -> str:
         return "//--//".join([self.loan_reference, self.document_id])

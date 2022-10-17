@@ -1,24 +1,18 @@
-from abc import ABC
-from typing import List, Union
+from typing import List
 
 from pydantic import BaseModel
 
-from src.application.common import enumerations as enums
-from src.application.models.library_management.user import User
+from src.common.models.library_management.user import User
 from src.data_access.repositories.base_repository import RepositoryBase
+from src.application.abstract_domain_service import AbstractDomainService
 
 __all__ = [
-    "UserService",
-    "ModelsService"
+    "UserService"
 ]
 
 
-class ModelsService(ABC):
-    def __init__(self) -> None: ...
-
-
-class UserService(ModelsService):
-    def __init__(self):
+class UserService(AbstractDomainService):
+    def __init__(self) -> None:
         super().__init__()
 
     @staticmethod
@@ -28,11 +22,10 @@ class UserService(ModelsService):
     @staticmethod
     def post_user(
         repository: RepositoryBase,
-        user_type: Union[enums.UserTypes, str],
         *args,
         **kwargs
     ) -> BaseModel:
-        user = repository.add(user_type=user_type, *args, **kwargs)
+        user = repository.add(*args, **kwargs)
         return user
 
     @staticmethod

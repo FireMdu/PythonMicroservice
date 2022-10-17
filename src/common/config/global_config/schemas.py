@@ -4,7 +4,8 @@ from pydantic import BaseModel
 
 __all__ = [
     "DatabaseDetails",
-    "Databases"
+    "Databases",
+    "GlobalConfiguration"
 ]
 
 
@@ -17,5 +18,7 @@ class DatabaseDetails(BaseModel):
 
 class Databases(BaseModel):
     main: DatabaseDetails = DatabaseDetails()
-    test: DatabaseDetails = DatabaseDetails()
-    paymentProfileReader: DatabaseDetails = DatabaseDetails()
+
+
+class GlobalConfiguration(BaseModel):
+    databases: Databases

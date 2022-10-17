@@ -1,11 +1,5 @@
 {
   "databases": {
-    "test": {
-      "serverName": "SQLServerAddress",
-      "databaseName": "inoxicoTestDataWarehouseDatabaseName",
-      "databaseUserId": "limitRecommendationsUser",
-      "databaseUserPassword": "limitRecommendationsUserPassword"
-    },
     "main": {
         "serverName": "SQLServerAddress",
         "databaseName": "inoxicoDataWarehouseDatabaseName",

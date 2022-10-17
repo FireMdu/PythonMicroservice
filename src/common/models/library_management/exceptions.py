@@ -8,7 +8,7 @@ __all__ = [
 
 class DocumentOutOfOrder(Exception):
 
-    def __init__(self, document_title: str, message: str = None):
+    def __init__(self, document_title: str, message: str = None) -> None:
         self.message = message
         self.document_title = document_title
         if not message:
@@ -17,7 +17,7 @@ class DocumentOutOfOrder(Exception):
 
 
 class InvalidUserIdentifier(Exception):
-    def __init__(self, user_identifier: Optional[str], message: str = None):
+    def __init__(self, user_identifier: Optional[str], message: str = None) -> None:
         self.message = message
         self.user_identifier = user_identifier
         if not message:
