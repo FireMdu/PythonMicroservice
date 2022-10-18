@@ -1,7 +1,7 @@
 # PythonMicroservice
 Sample Microservice done in Python
 
-![image](https://user-images.githubusercontent.com/2478826/192550186-33d45858-6f77-44ee-9fb1-0b0941e5b188.png)
+![image](https://user-images.githubusercontent.com/2478826/196535978-7e386fc5-6319-4894-b2d0-b4566b43fe35.png)
 
 ## Setup Guide
 1. Run the powershell script `.\setup.ps1` in the root of the folder (It will create a virtual env and install required packages)
