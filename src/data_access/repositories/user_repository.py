@@ -55,7 +55,7 @@ class UserSqlAlchemyRelationalRepository(SqlAlchemyRelationalRepositoryBase):
         db_user_type = db_user_type_query.filter(UserTypeEntity.user_type.in_(list(user_types))).all()
         if db_user_type is None:
             return []
-        user_groups = [ele.user_entity for ele in db_user_type]
+        user_groups = (ele.user_entity for ele in db_user_type)
         return [User.from_orm(ele) for ele in it.chain.from_iterable(user_groups)]
 
     def get(self, **filters) -> Optional[User]:
