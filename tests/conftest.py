@@ -1,4 +1,4 @@
-from typing import Any, Generator, Type
+from typing import Any, Generator
 
 import pytest
 from fastapi import FastAPI
@@ -9,7 +9,8 @@ import sqlalchemy as sa
 from sqlalchemy import event
 from src.app_definitions import ROOT_DIR
 from src.data_access.database.models.base_entity import InoversityLibraryBase
-from src.distribution.api.routers.users_api import PathDependency, sqlalchemy_dependency
+from src.distribution.api.routers.users_api import sqlalchemy_dependency
+from src.distribution.api import PathDependency
 from src.data_access.database.databases_tools.contexts.context_types import SqlAlchemyContext
 from src.distribution.api.api_manager import App
 
@@ -35,7 +36,8 @@ def start_application():
 @pytest.fixture(scope="function")
 def app() -> Generator[FastAPI, Any, None]:
     """
-    Create a fresh database on each test case.
+    Create a fresh database on each test case. This can be an expensive exercise for large databases.
+    Have a base database that does not need to be recreated.
     """
     InoversityLibraryBase.metadata.create_all(dbEngine)
     _app = start_application()
