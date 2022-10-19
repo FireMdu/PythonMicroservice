@@ -2,7 +2,9 @@ from typing import Optional
 
 __all__ = [
     "DocumentOutOfOrder",
-    "InvalidUserIdentifier"
+    "InvalidUserIdentifier",
+    "NoneExistingAccount",
+    "NoneUniqueExistingAccount",
 ]
 
 
@@ -22,4 +24,20 @@ class InvalidUserIdentifier(Exception):
         self.user_identifier = user_identifier
         if not message:
             self.message = f"Invalid user identifier: {self.user_identifier}"
+        super().__init__(self.message)
+
+
+class NoneExistingAccount(Exception):
+    def __init__(self, message: str = None) -> None:
+        self.message = message
+        if not message:
+            self.message = f"Can only assign an account to an existing user."
+        super().__init__(self.message)
+
+
+class NoneUniqueExistingAccount(Exception):
+    def __init__(self, message: str = None) -> None:
+        self.message = message
+        if not message:
+            self.message = f"Can only assign an account to a unique existing user. Query returned multiple users."
         super().__init__(self.message)

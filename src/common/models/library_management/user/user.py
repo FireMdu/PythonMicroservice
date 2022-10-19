@@ -9,6 +9,7 @@ from src.common.models.library_management.document import Document
 
 __all__ = [
     "User",
+    "CreateUser",
     "UserInDatabase",
     "StudentUser",
     "StudentUserInDatabase",
@@ -38,7 +39,7 @@ class UserBase(AbstractDomainModel, ABC):
         return False
 
     @classmethod
-    def from_orm(cls, obj) -> UserBase:
+    def from_orm(cls, obj) -> Union[UserBase, AbstractDomainModel]:
         return super().from_orm(obj=obj)
 
     @classmethod
@@ -97,9 +98,16 @@ class User(UserBase):
         ...
 
 
+class CreateUser(User):
+    password: str
+
+    class Config:
+        orm_mode = True
+
+
 class UserInDatabase(User):
     user_id: Optional[str]
-    password: Optional[str]
+    password: str
 
     class Config:
         orm_mode = True
