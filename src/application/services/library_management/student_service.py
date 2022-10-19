@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Union
 
-from src.common.models.library_management.user import StudentUser
+from src.common.models.library_management.user import StudentUser, User
 from src.application.abstract_domain_service import AbstractDomainService
-from src.data_access.repositories.base_repository import SqlAlchemyRelationalRepositoryBase
+from src.data_access.repositories.student_repository import StudentUserSqlAlchemyRelationalRepository
 
 __all__ = [
     "StudentService"
@@ -10,13 +10,14 @@ __all__ = [
 
 
 class StudentService(AbstractDomainService):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, context) -> None:
+        super().__init__(context=context)
+        self.repository: StudentUserSqlAlchemyRelationalRepository = StudentUserSqlAlchemyRelationalRepository(
+            context=self.context
+        )
 
-    @staticmethod
-    def get_all_students(repository: SqlAlchemyRelationalRepositoryBase, *args, **kwargs) -> List[StudentUser]:
-        return repository.list(*args, **kwargs)
+    def get_all_student_users(self) -> List[User]:
+        return self.repository.list()
 
-    @staticmethod
-    def post_a_student(repository: SqlAlchemyRelationalRepositoryBase, *args, **kwargs) -> StudentUser:
-        return repository.add(*args, **kwargs)
+    def post_a_student_user(self, *, student: Union[StudentUser, User]) -> Union[StudentUser, User]:
+        return self.repository.add(student=student)

@@ -2,7 +2,7 @@ from typing import List
 
 from src.common.models.library_management.account import Account
 from src.application.abstract_domain_service import AbstractDomainService
-from src.data_access.repositories.base_repository import SqlAlchemyRelationalRepositoryBase
+from src.data_access.repositories.account_repository import AccountSqlAlchemyRelationalRepository
 
 __all__ = [
     "AccountService",
@@ -10,14 +10,15 @@ __all__ = [
 
 
 class AccountService(AbstractDomainService):
-    def __init__(self) -> None:
-        super().__init__()
 
-    @staticmethod
-    def get_all_accounts(repository: SqlAlchemyRelationalRepositoryBase, *args, **kwargs) -> List[Account]:
-        return repository.list(*args, **kwargs)
+    def __init__(self, context) -> None:
+        super().__init__(context)
+        self.repository: AccountSqlAlchemyRelationalRepository = AccountSqlAlchemyRelationalRepository(
+            context=self.context
+        )
 
-    @staticmethod
-    def post_an_account(repository: SqlAlchemyRelationalRepositoryBase, *args, **kwargs) -> Account:
-        account = repository.add(*args, **kwargs)
-        return account
+    def get_all_accounts(self) -> List[Account]:
+        return self.repository.list()
+
+    def create_account_for_user(self, *, user_email_address) -> Account:
+        return self.repository.create(user_email_address=user_email_address)

@@ -1,10 +1,9 @@
-from typing import List
-
-from pydantic import BaseModel
+from typing import List, Optional
 
 from src.common.models.library_management.user import User
-from src.data_access.repositories.base_repository import RepositoryBase
 from src.application.abstract_domain_service import AbstractDomainService
+from src.common.models.library_management.user import user_types as enum_type
+from src.data_access.repositories.user_repository import UserSqlAlchemyRelationalRepository
 
 __all__ = [
     "UserService"
@@ -12,26 +11,12 @@ __all__ = [
 
 
 class UserService(AbstractDomainService):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, context) -> None:
+        super().__init__(context)
+        self.repository: UserSqlAlchemyRelationalRepository = UserSqlAlchemyRelationalRepository(context=self.context)
 
-    @staticmethod
-    def get_all_users(repository: RepositoryBase, *args, **kwargs) -> List[User]:
-        return repository.list(*args, **kwargs)
+    def get_all_users(self) -> List[User]:
+        return self.repository.list(enum_type.UserTypes.student, enum_type.UserTypes.staff)
 
-    @staticmethod
-    def post_user(
-        repository: RepositoryBase,
-        *args,
-        **kwargs
-    ) -> BaseModel:
-        user = repository.add(*args, **kwargs)
-        return user
-
-    @staticmethod
-    def get_user(
-        repository: RepositoryBase,
-        **filters
-    ) -> BaseModel:
-        user = repository.get(**filters)
-        return user
+    def get_user_by_filters(self, **filters) -> Optional[User]:
+        return self.repository.get(**filters)
