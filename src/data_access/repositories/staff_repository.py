@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
-from src.common.models.library_management.user import User
+from src.common.models.library_management.user import User, Staff
 from src.common.models.library_management.user import user_types as enum_typ
 from src.data_access.repositories.user_repository import UserSqlAlchemyRelationalRepository
 
@@ -13,8 +13,11 @@ NO_IMPLEMENTATION = "No implementation"
 
 
 class StaffUserSqlAlchemyRelationalRepository(UserSqlAlchemyRelationalRepository):
-    def add(self, *args, **kwargs) -> Optional[User]:
-        return super().add_user(*args, user_type=enum_typ.UserTypes.staff, **kwargs)
+    def add(self, staff: Staff) -> Optional[User]:
+        return super()._add_user(user=staff, user_type=enum_typ.UserTypes.staff)
+
+    def list(self) -> List[User]:
+        return super().list(enum_typ.UserTypes.staff)
 
     def update(self, **kwargs):
         raise NotImplementedError(NO_IMPLEMENTATION)

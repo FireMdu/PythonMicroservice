@@ -48,26 +48,3 @@ class SqlAlchemyRelationalRepositoryBase(RepositoryBase, ABC):
 
     def sync(self) -> None:
         self.context.flush()
-
-    def add(
-        self,
-        *,
-        entity_model: Type[EntityModel],
-        app_model_instance: ApplicationModel,
-        app_out_model: Type[ApplicationModel],
-            **kwargs
-    ) -> Optional[ApplicationModel]:
-        entity = entity_model(**app_model_instance.dict())
-        self.context.add(entity)
-        self.sync()
-        return app_out_model.from_orm(entity)
-
-    def list(
-        self,
-        *,
-        entity_model: Type[EntityModel],
-        app_out_model: Type[ApplicationModel],
-        **kwargs
-    ) -> List[ApplicationModel]:
-        entity_models = self.context.query(entity_model).all()
-        return [app_out_model.from_orm(ele) for ele in entity_models]

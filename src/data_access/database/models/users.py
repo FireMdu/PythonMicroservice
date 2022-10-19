@@ -15,4 +15,6 @@ class UserEntity(InoversityLibraryBase):
     email_address = Column("emailAddress", String(), nullable=False)
     password = Column("password", String(), nullable=False)
     user_type_id = Column("userTypeId", INTEGER(), ForeignKey("UserType.id"), nullable=False)
-    user_type = relationship("UserTypeEntity", back_populates='user')
+    account_id = Column("accountId", INTEGER(), ForeignKey("Account.id"), nullable=True)
+    user_type_entity = relationship("UserTypeEntity", back_populates='user_entity')
+    account_entity = relationship("AccountEntity", back_populates='user_entity', uselist=False)
