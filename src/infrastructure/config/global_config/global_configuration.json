@@ -1,0 +1,10 @@
+{
+  "databases": {
+    "main": {
+        "serverName": "SQLServerAddress",
+        "databaseName": "inoxicoDataWarehouseDatabaseName",
+        "databaseUserId": "limitRecommendationsUser",
+        "databaseUserPassword": "limitRecommendationsUserPassword"
+    }
+  }
+}

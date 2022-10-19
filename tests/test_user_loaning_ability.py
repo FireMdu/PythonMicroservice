@@ -1,8 +1,6 @@
 import pytest
 
-from src.application.models import Document
-from src.application.models import StudentUser
-from src.application.models import LoanLine
+from src.common.models import StudentUser
 
 skip_reason: str = "No implementation yet"
 

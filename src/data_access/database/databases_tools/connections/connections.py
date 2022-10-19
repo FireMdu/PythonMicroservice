@@ -1,6 +1,6 @@
 import os
 
-from src.application.common.config.globalConfig.globalConfiguration import GlobalConfigurationManager
+from src.infrastructure.config.global_config.global_configuration import GlobalConfigurationManager
 from src.data_access.database.databases_tools.connections.database_engines import MicrosoftSQLServerSQLAlchemy
 
 __all__ = [

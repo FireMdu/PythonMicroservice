@@ -1,16 +1,14 @@
 from typing import TypeVar, List, Optional
 
-from pydantic import BaseModel
 from fastapi import APIRouter, Depends
 from fastapi_versioning import version
 
-from src.data_access.context import ServiceContext
 from src.data_access.database import SqlAlchemyContext
-from src.application.models import User, UserInDatabase
-from src.services.library_management import UserService
-from src.application.common import enumerations as enums
-from src.data_access.repositories import UserSqlAlchemyRelationalRepository, RepositoryBase
-
+from src.common.models.library_management.account import Account
+from src.data_access.repositories.base_repository import RepositoryBase
+from src.common.models.library_management.user import User, CreateUser
+from src.application.services.library_management import UserService, StudentService, StaffService, AccountService
+from src.distribution.api.schemas import PathDependency
 
 Repository = TypeVar("Repository", bound=RepositoryBase)
 
@@ -21,47 +19,40 @@ router = APIRouter(
 )
 
 
-class PathDependency(BaseModel):
-    context: ServiceContext
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
 def sqlalchemy_dependency():
+    # TODO: Re-look at this dependency creation
     yield PathDependency(context=SqlAlchemyContext())
 
 
-@router.get("/", status_code=200, name="Get all users", response_model=List[User])
+@router.get("/all", status_code=200, name="Get all users", response_model=List[User])
 @version(1, 0)
 async def get_all_users(path_dependency: PathDependency = Depends(sqlalchemy_dependency)):
     with path_dependency.context.get_context() as context:
-        user_repository = UserSqlAlchemyRelationalRepository(context=context)
-        users = UserService.get_all_users(repository=user_repository)
-        return users
+        service = UserService(context=context)
+        return service.get_all_users()
 
 
 @router.post("/student", name="Post student user", status_code=200, response_model=User)
 @version(1, 0)
 async def post_student(
-        student: UserInDatabase,
+        student: CreateUser,
         path_dependency: PathDependency = Depends(sqlalchemy_dependency)
 ):
     with path_dependency.context.get_context() as context:
-        user_repository = UserSqlAlchemyRelationalRepository(context=context)
-        student = UserService.post_user(repository=user_repository, user_type=enums.UserTypes.student, **student.dict())
-        return User.parse_obj(student.dict())
+        service = StudentService(context=context)
+        student_user = service.post_a_student_user(student=student)
+        return User.parse_obj(student_user.dict())
 
 
 @router.post("/staff", name="Post staff user", status_code=200, response_model=User)
 @version(1, 0)
 async def post_staff(
-        staff: UserInDatabase,
+        staff: CreateUser,
         path_dependency: PathDependency = Depends(sqlalchemy_dependency)
 ):
     with path_dependency.context.get_context() as context:
-        user_repository = UserSqlAlchemyRelationalRepository(context=context)
-        staff = UserService.post_user(repository=user_repository, user_type=enums.UserTypes.staff, **staff.dict())
+        service = StaffService(context=context)
+        staff = service.post_a_staff_user(staff=staff)
         return User.parse_obj(staff.dict())
 
 
@@ -72,15 +63,45 @@ async def post_staff(
     response_model=Optional[User]
 )
 @version(1, 0)
-async def post_student(
+async def get_user_by_email_address(
         email_address: str,
         path_dependency: PathDependency = Depends(sqlalchemy_dependency),
 ):
     with path_dependency.context.get_context() as context:
-        user_repository = UserSqlAlchemyRelationalRepository(context=context)
         filters = {
             "email_address": email_address
         }
-        user = UserService.get_user(repository=user_repository, **filters)
+        service = UserService(context=context)
+        user = service.get_user_by_filters(**filters)
         if user is not None:
             return User.parse_obj(user.dict())
+
+
+@router.post(
+    "/account/{email_address}",
+    name="Create user account by email address",
+    status_code=200,
+    response_model=Optional[Account]
+)
+@version(1, 0)
+async def create_user_account(
+        email_address: str,
+        path_dependency: PathDependency = Depends(sqlalchemy_dependency),
+):
+    with path_dependency.context.get_context() as context:
+        service = AccountService(context=context)
+        account = service.create_account_for_user(user_email_address=email_address)
+        return Account.parse_obj(account.dict())
+
+
+@router.get(
+    "/account/all",
+    name="Get all user accounts",
+    status_code=200,
+    response_model=List[Account]
+)
+@version(1, 0)
+async def get_all_user_account(path_dependency: PathDependency = Depends(sqlalchemy_dependency)):
+    with path_dependency.context.get_context() as context:
+        service = AccountService(context=context)
+        return service.get_all_accounts()

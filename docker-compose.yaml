@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  persistence:
+    image: mysql:latest
+    restart: always
+    env_file:
+      - ./microservice.env
+    environment:
+      MYSQL_ROOT_PASSWORD: "yes"
+      MYSQL_HOST: ${DB_HOST}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - "mysql-data:/var/lib/mysql"
+      - "./microservice_mysql_entry_point.d/:/microservice_mysql_entry_point.d/"
+    expose:
+      - "3306"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+    mysql-data:
