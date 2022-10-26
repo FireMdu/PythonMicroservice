@@ -23,15 +23,15 @@ class UserSqlAlchemyRelationalRepository(SqlAlchemyRelationalRepositoryBase):
         super().__init__(context=context)
 
     def add(self, *args, **kwargs) -> User:
-        raise NotImplementedError("Must be implemented by the specific user type subclass.")
+        raise NotImplementedError("Must be implemented by the repository subclass.")
 
     def _add_user(self, *, user_type: Union[enum_typ.UserTypes, str], user: User) -> User:
         user_type_entity = UserTypeEntity(**UserType(user_type=user_type).dict())
         user_model: UserInDatabase = UserInDatabase.parse_obj(user.dict())
         db_user_type_query = self.context.query(UserTypeEntity)
-        db_user_type = db_user_type_query.filter(UserTypeEntity.user_type == user_type_entity.user_type).first()
-        if db_user_type is not None:
-            user_type_entity = db_user_type
+        db_user_type_entity = db_user_type_query.filter(UserTypeEntity.user_type == user_type_entity.user_type).first()
+        if db_user_type_entity is not None:
+            user_type_entity = db_user_type_entity
 
         db_user = self.context.query(UserEntity)
         try:
@@ -52,7 +52,7 @@ class UserSqlAlchemyRelationalRepository(SqlAlchemyRelationalRepositoryBase):
 
     def _list_users(self, *user_types: Union[enum_typ.UserTypes, str]) -> List[User]:
         db_user_type_query = self.context.query(UserTypeEntity)
-        db_user_type = db_user_type_query.filter(UserTypeEntity.user_type.in_(list(user_types))).all()
+        db_user_type = db_user_type_query.where(UserTypeEntity.user_type.in_(list(user_types))).all()
         if db_user_type is None:
             return []
         user_groups = (ele.user_entity for ele in db_user_type)

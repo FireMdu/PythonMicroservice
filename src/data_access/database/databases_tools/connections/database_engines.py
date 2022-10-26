@@ -12,7 +12,8 @@ __all__ = [
     "SQLLocalPyodbc",
     "SQLAlchemy",
     "MicrosoftSQLServerSQLAlchemy",
-    "SQLLocalAlchemy"
+    "SQLLocalAlchemy",
+    "MySQLServerSQLAlchemy"
 ]
 
 
@@ -148,6 +149,32 @@ class MicrosoftSQLServerSQLAlchemy(SQLAlchemy):
                     "DRIVER={0};SERVER={1};DATABASE={2}".format(
                         self.driver, self.server,
                         self.database_name
+                    )
+                )
+            )
+        return conn_str
+
+
+class MySQLServerSQLAlchemy(SQLAlchemy):
+    driver = None
+
+    def set_connection(self):
+        return self.conn_obj(
+            self.get_conn_str(),
+            pool_pre_ping=True,
+            pool_size=25,
+            max_overflow=10,
+            pool_timeout=60 * 6
+        )
+
+    def get_conn_str(self):
+        if self.database_uid:
+            conn_str = rf"mysql://{self.get_interpolated_string_secrets()}"
+        else:
+            conn_str = "mysql:///?odbc_connect={}".format(
+                urllib.parse.quote_plus(
+                    "SERVER={0};DATABASE={1}".format(
+                        self.server, self.database_name
                     )
                 )
             )

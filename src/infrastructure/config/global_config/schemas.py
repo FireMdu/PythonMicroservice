@@ -1,6 +1,8 @@
-from typing import Optional
+from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, BaseSettings, Field
+
+from src.app_definitions import ROOT_DIR
 
 __all__ = [
     "DatabaseDetails",
@@ -9,11 +11,15 @@ __all__ = [
 ]
 
 
-class DatabaseDetails(BaseModel):
-    serverName: Optional[str]
-    databaseName: Optional[str]
-    databaseUserId: Optional[str]
-    databaseUserPassword: Optional[str]
+class DatabaseDetails(BaseSettings):
+    serverName: str = Field(..., env="DATABASE_HOST_NAME")
+    databaseName: str = Field(..., env="DATABASE_NAME")
+    databaseUserId: str = Field(..., env="DATABASE_LIB_ADMIN_USER_ID")
+    databaseUserPassword: str = Field(..., env="DATABASE_LIB_ADMIN_PASSWORD")
+    databasePort: str = Field(..., env="DATABASE_PORT")
+
+    class Config:
+        env_file = ROOT_DIR.joinpath(Path(".env"))
 
 
 class Databases(BaseModel):
@@ -21,4 +27,4 @@ class Databases(BaseModel):
 
 
 class GlobalConfiguration(BaseModel):
-    databases: Databases
+    databases: Databases = Databases()
