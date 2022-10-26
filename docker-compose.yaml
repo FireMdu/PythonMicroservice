@@ -1,30 +1,21 @@
 version: '3.8'
 
 services:
-  persistence:
-    image: mysql:latest
+  microsoft_sql:
+    build: database_migrations/scripts/mssql
     restart: always
     env_file:
-      - ./microservice.env
+      - ./.env
     environment:
-      MYSQL_ROOT_PASSWORD: "yes"
-      MYSQL_HOST: ${DB_HOST}
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      - MSSQL_SA_PASSWORD=${DATABASE_SA_PASSWORD}
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
     ports:
-      - "3306:3306"
+      - "5434:1433"
     volumes:
-      - "mysql-data:/var/lib/mysql"
-      - "./microservice_mysql_entry_point.d/:/microservice_mysql_entry_point.d/"
+      - "mssql-data:/var/lib/mssql"
     expose:
-      - "3306"
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8080:8080"
+      - "5434"
 
 volumes:
-    mysql-data:
+    mssql-data:
