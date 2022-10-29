@@ -22,18 +22,22 @@ class SQLInteract:
             self,
             server,
             database_name,
+            server_port=None,
             database_uid="",
+            pwd=None,
             driver='{ODBC Driver 17 for SQL Server}',
-            conn_obj=pyodbc.connect, pwd=None
+            conn_obj=pyodbc.connect,
     ):
 
         self.database_name = database_name
         self.server = server
+        self.server_port = server_port
         self.database_uid = database_uid
         self.driver = driver
         self.conn_obj = conn_obj
         self.password = pwd
-
+        if self.server_port is not None:
+            self.server = ":".join([self.server, self.server_port])
         self.connection = self.set_connection()
 
     def set_connection(self):
@@ -84,6 +88,7 @@ class SQLInteract:
 class SQLLocalPyodbc(SQLInteract):
     def __init__(
             self,
+            *,
             server,
             database_name,
             driver='{SQL Server}',
@@ -96,15 +101,24 @@ class SQLLocalPyodbc(SQLInteract):
 
 class SQLAlchemy(SQLInteract):
     def __init__(
-            self, server, database_name, database_uid=None,
+            self,
+            *,
+            server,
+            database_name,
+            server_port=None,
+            database_uid=None,
             pwd="",
             driver='{ODBC Driver 17 for SQL Server}',
-            conn_obj=sqlalchemy.create_engine
+            conn_obj=sqlalchemy.create_engine,
     ):
         SQLInteract.__init__(
-            self, server=server, database_name=database_name,
-            database_uid=database_uid, driver=driver, conn_obj=conn_obj,
-            pwd=pwd
+            self,
+            server=server,
+            server_port=server_port,
+            database_name=database_name,
+            database_uid=database_uid,
+            driver=driver, conn_obj=conn_obj,
+            pwd=pwd,
         )
 
     def get_conn_str(self):

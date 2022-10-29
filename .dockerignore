@@ -1,0 +1,12 @@
+./python_local
+./logs
+./.env
+./.dockerignore
+./InoversityLibraryModel.db
+./library_management_system.puml
+./library_management_system_minimal_version.puml
+./README.md
+./setup.ps1
+./docker-compose.yaml
+./dist
+./build
