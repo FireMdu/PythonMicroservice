@@ -1,21 +1,14 @@
 version: '3.8'
 
 services:
-  microsoft_sql:
-    build: database_migrations/scripts/mssql
+  limit_recommendations:
+    image: limit_recommendations:0.0.0
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: Dockerfile-LimitRecommendations
     restart: always
-    env_file:
-      - ./.env
     environment:
-      - MSSQL_SA_PASSWORD=${DATABASE_SA_PASSWORD}
       - ACCEPT_EULA=Y
-      - MSSQL_PID=Developer
     ports:
-      - "5434:1433"
-    volumes:
-      - "mssql-data:/var/lib/mssql"
-    expose:
-      - "5434"
-
-volumes:
-    mssql-data:
+      - "8000:8000"
