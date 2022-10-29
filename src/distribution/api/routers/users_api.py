@@ -4,18 +4,18 @@ from fastapi import APIRouter, Depends
 from fastapi_versioning import version
 
 from src.data_access.database import SqlAlchemyContext
-from src.common.models.library_management.account import Account
-from src.data_access.repositories.base_repository import RepositoryBase
-from src.common.models.library_management.user import User, CreateUser
-from src.application.services.library_management import UserService, StudentService, StaffService, AccountService
 from src.distribution.api.schemas import PathDependency
+from src.common.models.library_management.account import Account
+from src.common.models.library_management.user import User, CreateUser
+from src.data_access.repositories.base_repository import RepositoryBase
+from src.application.services.library_management import UserService, StudentService, StaffService, AccountService
 
 Repository = TypeVar("Repository", bound=RepositoryBase)
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
-    responses={404: {"description": "Not found"}},
+    responses={404: {"description": "Not found"}}
 )
 
 

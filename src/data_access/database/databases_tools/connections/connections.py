@@ -7,10 +7,12 @@ __all__ = [
 
 
 configManager = GlobalConfigurationManager()
-config = configManager.configuration
+database_config = configManager.configuration.databases.main
+
 sql_server_connection = MicrosoftSQLServerSQLAlchemy(
-            server=":".join([config.serverName, config.databasePort]),
-            database_name=config.databaseName,
-            database_uid=config.databaseUserId,
-            pwd=config.databaseUserPassword
+            server=database_config.server_name,
+            server_port=database_config.server_port,
+            database_name=database_config.database_name,
+            database_uid=database_config.database_user,
+            pwd=database_config.database_user_password
         )

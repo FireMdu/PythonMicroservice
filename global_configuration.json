@@ -1,0 +1,12 @@
+{
+  "environment": "Development",
+  "databases": {
+    "main": {
+        "serverName": "host.docker.internal",
+        "databaseName": "InoversityLibrary",
+        "databaseUser": "LibrarySA",
+        "databaseUserPassword": "x37s!47moakq$RAq",
+        "serverPort": 1433
+    }
+  }
+}
