@@ -2,6 +2,9 @@ import logging
 import logging.handlers as handlers
 
 from logging.handlers import TimedRotatingFileHandler
+from pathlib import Path
+from typing import Union
+
 from src.infrastructure.locations import Locations
 from src.infrastructure.singleton_decorator import Singleton
 from enum import Enum
@@ -19,6 +22,7 @@ class LogManager(metaclass=Singleton):
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", '%m-%d-%Y %H:%M:%S')
 
     def __init__(self) -> None:
+        self.set_logs_directory(f'{Locations.root_path()}/logs')
         self._logger = logging.getLogger()
         self._logger.setLevel(logging.INFO)  # Only log entries from this level or higher
 
@@ -32,6 +36,10 @@ class LogManager(metaclass=Singleton):
     @property
     def logger(self) -> logging.Logger:
         return self._logger
+
+    @staticmethod
+    def set_logs_directory(dir_name: Union[Path, str]):
+        Path(dir_name).mkdir(parents=True, exist_ok=True)
 
     def create_rolling_file_handler_daily(self, file_name):
         log_file_daily_path = f'{Locations.root_path()}/logs/{file_name}.log'
