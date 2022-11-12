@@ -1,0 +1,11 @@
+{
+  "databases": {
+    "main": {
+        "serverName": "#{serverName}#",
+        "databaseName": "#{databaseName}#",
+        "databaseUser": "#{databaseUser}#",
+        "databaseUserPassword": "#{databaseUserPassword}#",
+        "serverPort": "#{serverPort}#"
+    }
+  }
+}

@@ -1,3 +1,7 @@
+"""
+This is a constant definitions
+"""
+
 from pathlib import Path
 
 __all__ = [

@@ -1,11 +1,16 @@
-from typing import Optional, Union
+import random
+import string
+from typing import Optional, List
 
-from sqlalchemy.exc import MultipleResultsFound
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import MultipleResultsFound
 
-from src.application.models import Account, User
-from src.data_access.database import AccountEntity
+from src.data_access.database.models.users import UserEntity
+from src.common.models.library_management.account import Account
+from src.data_access.database.models.account_entity import AccountEntity
+from src.common.models.library_management.account import AccountInDatabase
 from src.data_access.repositories.base_repository import SqlAlchemyRelationalRepositoryBase
+from src.common.models.library_management.exceptions import NoneExistingAccount, NoneUniqueExistingAccount
 
 __all__ = [
     "AccountSqlAlchemyRelationalRepository"
@@ -19,19 +24,34 @@ class AccountSqlAlchemyRelationalRepository(SqlAlchemyRelationalRepositoryBase):
     def __init__(self, context: Session) -> None:
         super().__init__(context=context)
 
-    def add(self, *args, user: Union[User], **kwargs) -> Optional[Account]:
-        entity = AccountEntity(user=user, **Account.parse_obj(kwargs).dict())
+    def create(self, *, user_email_address: str) -> Optional[Account]:
         try:
-            # check if user has a valid account already
-            user_account = user.account
-            if user_account is not None:
-                return Account.from_orm(entity)
+            user: UserEntity = self.context.query(UserEntity).filter_by(email_address=user_email_address).scalar()
         except MultipleResultsFound:
-            return Account.from_orm(entity)
-        else:
-            self.context.add(entity)
-            self.sync()
-        return Account.from_orm(entity)
+            raise NoneUniqueExistingAccount()
+        if user is None:
+            raise NoneExistingAccount()
+        if user.account_entity is not None:
+            return Account.from_orm(user.account)
+        account_model = AccountInDatabase(account_number=self.generate_account_number(length=10))
+        account_entity = AccountEntity(user_entity=user, **account_model.dict())
+        self.context.add(account_entity)
+        self.sync()
+        return Account.from_orm(account_entity)
+
+    def add(self, *args, **kwargs):
+        raise NotImplementedError(NO_IMPLEMENTATION)
+
+    @staticmethod
+    def generate_account_number(*, length=10):
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for _ in range(length))
+
+    def list(self) -> List[Account]:
+        accounts: Optional[List[AccountEntity]] = self.context.query(AccountEntity).all()
+        if accounts is None:
+            return []
+        return [Account.from_orm(ele) for ele in accounts]
 
     def get(self, **filters):
         raise NotImplementedError(NO_IMPLEMENTATION)

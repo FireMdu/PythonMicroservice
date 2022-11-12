@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  limit_recommendations:
+    image: limit_recommendations:0.0.0
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: Dockerfile-InoversityLibrary
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "8000:8000"

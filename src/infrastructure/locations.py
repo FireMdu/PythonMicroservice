@@ -1,13 +1,8 @@
-import os
+from src.app_definitions import ROOT_DIR
 
-class Locations():
+
+class Locations:
     
     @staticmethod
     def root_path():
-        root_path = os.getcwd()
-        return root_path
-
-
-
-
-
+        return ROOT_DIR
