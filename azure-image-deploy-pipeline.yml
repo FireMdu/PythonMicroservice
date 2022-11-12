@@ -12,11 +12,13 @@ variables:
 - group: Project
 - name: baseImageTag
   value: '$(baseTagSuffix)-$(baseImageVersion)'
+- name: baseLatestImageTag
+  value: '$(baseTagSuffix)-$(latestImageIdentifier)'
 
 stages:
 - stage: Build
   displayName: 'Build Stage'
-  
+
   jobs:
     - job: IntegrateBaseImage
 
@@ -34,9 +36,10 @@ stages:
           buildContext: '**'
           containerRegistry: '$(containerRegistryServiceConnectionName)'
           dockerfile: '$(Build.SourcesDirectory)/$(baseImageDockerfileName)'
-          repository: '$(containerRegistryBaseRepo)/$(imageName)'
+          repository: '$(imageName)'
           tags: |
             $(baseImageTag)
+            $(baseLatestImageTag)
 
     - job: CreateConfigArtifact
 
@@ -51,7 +54,7 @@ stages:
         displayName: 'Copy config template.'
         inputs:
           sourceFolder: '$(Build.SourcesDirectory)'
-          contents: '**/global_configuration_template.json' 
+          contents: '**/global_configuration_template.json'
           targetFolder: '$(Build.StagingDirectory)'
 
       - task: PublishPipelineArtifact@1
@@ -60,7 +63,7 @@ stages:
           path: '$(Build.StagingDirectory)'
           artifactName: '$(configTemplateArtifactName)'
           artifactType: 'pipeline'
-          
+
 
 - stage: CDDevelopment
 
@@ -70,6 +73,8 @@ stages:
     value: 'dev'
   - name: devImageTag
     value: '$(devImageTagSuffix)-$(Build.BuildId)'
+  - name: devLatestImageTag
+    value: '$(devImageTagSuffix)-$(latestImageIdentifier)'
 
   displayName: 'CD Stage: Dev'
 
@@ -90,7 +95,7 @@ stages:
             vmImage: ubuntu-latest
 
           steps:
-          
+
           - download: none
 
           - task: DownloadPipelineArtifact@2
@@ -106,14 +111,14 @@ stages:
               script: Rename-Item ./global_configuration_template.json ./global_configuration.json
               workingDirectory: '$(Build.StagingDirectory)'
               pwsh: true
-    
+
           - task: FileTransform@1
             displayName: 'Substitute config template variables'
             inputs:
               folderPath: '$(Build.StagingDirectory)'
               targetFiles: 'global_configuration.json'
               fileType: 'json'
-              
+
           - task: CopyFiles@2
             displayName: 'Relocate files to source directory'
             inputs:
@@ -139,14 +144,15 @@ stages:
                 $dockerfile | Out-File $(upperLayersDockerfileName)
               workingDirectory: '$(Build.SourcesDirectory)'
               pwsh: true
-              
+
           - task: Docker@2
             displayName: 'Build & push `$(imageName)` image to CR'
             inputs:
               command: buildAndPush
               buildContext: '**'
               dockerfile: '$(upperLayersDockerfileName)'
-              repository: '$(containerRegistryBaseRepo)/$(imageName)'
+              repository: '$(imageName)'
               containerRegistry: '$(containerRegistryServiceConnectionName)'
               tags: |
                 $(devImageTag)
+                $(devLatestImageTag)
