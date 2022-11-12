@@ -6,7 +6,7 @@ services:
     pull_policy: never
     build:
       context: .
-      dockerfile: Dockerfile-LimitRecommendations
+      dockerfile: Dockerfile-InoversityLibrary
     restart: always
     environment:
       - ACCEPT_EULA=Y

@@ -136,3 +136,6 @@ dmypy.json
 
 # ide settings
 /.idea
+
+# project files
+/global_configuration.json

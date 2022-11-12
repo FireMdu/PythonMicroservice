@@ -1,0 +1,158 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+resources:
+  - repo: self
+
+trigger:
+  - main
+
+variables:
+- group: Project
+- name: baseImageTag
+  value: '$(baseTagSuffix)-$(baseImageVersion)'
+- name: baseLatestImageTag
+  value: '$(baseTagSuffix)-$(latestImageIdentifier)'
+
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+
+  jobs:
+    - job: IntegrateBaseImage
+
+      displayName: 'Integrate inoversity library base image'
+
+      pool:
+        vmImage: ubuntu-latest
+
+      steps:
+
+      - task: Docker@2
+        displayName: 'Build & push`$(imageName)` image to CR'
+        inputs:
+          command: buildAndPush
+          buildContext: '**'
+          containerRegistry: '$(containerRegistryServiceConnectionName)'
+          dockerfile: '$(Build.SourcesDirectory)/$(baseImageDockerfileName)'
+          repository: '$(imageName)'
+          tags: |
+            $(baseImageTag)
+            $(baseLatestImageTag)
+
+    - job: CreateConfigArtifact
+
+      displayName: 'Create configuration artifact'
+
+      pool:
+        vmImage: ubuntu-latest
+
+      steps:
+
+      - task: CopyFiles@2
+        displayName: 'Copy config template.'
+        inputs:
+          sourceFolder: '$(Build.SourcesDirectory)'
+          contents: '**/global_configuration_template.json'
+          targetFolder: '$(Build.StagingDirectory)'
+
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish config as pipeline artifact'
+        inputs:
+          path: '$(Build.StagingDirectory)'
+          artifactName: '$(configTemplateArtifactName)'
+          artifactType: 'pipeline'
+
+
+- stage: CDDevelopment
+
+  variables:
+  - group: Development
+  - name: devImageTagSuffix
+    value: 'dev'
+  - name: devImageTag
+    value: '$(devImageTagSuffix)-$(Build.BuildId)'
+  - name: devLatestImageTag
+    value: '$(devImageTagSuffix)-$(latestImageIdentifier)'
+
+  displayName: 'CD Stage: Dev'
+
+  jobs:
+  - deployment: Dev
+
+    displayName: 'Deploy to Development'
+
+    environment: 'Development'
+
+    strategy:
+
+      runOnce:
+
+        deploy:
+
+          pool:
+            vmImage: ubuntu-latest
+
+          steps:
+
+          - download: none
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download config template artifact'
+            inputs:
+              path: '$(Build.StagingDirectory)'
+              artifactName: '$(configTemplateArtifactName)'
+
+          - task: PowerShell@2
+            displayName: 'Rename config template'
+            inputs:
+              targetType: 'inline'
+              script: Rename-Item ./global_configuration_template.json ./global_configuration.json
+              workingDirectory: '$(Build.StagingDirectory)'
+              pwsh: true
+
+          - task: FileTransform@1
+            displayName: 'Substitute config template variables'
+            inputs:
+              folderPath: '$(Build.StagingDirectory)'
+              targetFiles: 'global_configuration.json'
+              fileType: 'json'
+
+          - task: CopyFiles@2
+            displayName: 'Relocate files to source directory'
+            inputs:
+              sourceFolder: '$(Build.StagingDirectory)'
+              contents: '**'
+              targetFolder: '$(Build.SourcesDirectory)'
+
+          - task: PowerShell@2
+            displayName: 'Write base image extension Dockerfile'
+            inputs:
+              targetType: 'inline'
+              script: |
+                $dockerfile = '#syntax=docker/dockerfile:1
+
+                FROM $(containerRegistryBaseRepo)/$(imageName):$(baseImageTag)
+
+                COPY ./global_configuration.json ./global_configuration.json
+
+                EXPOSE 8000
+                
+                CMD ["./entry_point.sh"]
+                '
+                $dockerfile | Out-File $(upperLayersDockerfileName)
+              workingDirectory: '$(Build.SourcesDirectory)'
+              pwsh: true
+
+          - task: Docker@2
+            displayName: 'Build & push `$(imageName)` image to CR'
+            inputs:
+              command: buildAndPush
+              buildContext: '**'
+              dockerfile: '$(upperLayersDockerfileName)'
+              repository: '$(imageName)'
+              containerRegistry: '$(containerRegistryServiceConnectionName)'
+              tags: |
+                $(devImageTag)
+                $(devLatestImageTag)
