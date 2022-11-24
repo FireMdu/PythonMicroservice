@@ -10,51 +10,43 @@ trigger:
 
 variables:
 - group: Project
-- name: baseImageTag
-  value: '$(baseTagSuffix)-$(baseImageVersion)'
+- name: baseBuildImageTag
+  value: '$(baseImageTagPrefix)-$(baseBuildImageVersion)'
+- name: baseDeployImageTag
+  value: '$(baseImageTagPrefix)-$(baseDeployImageVersion)'
 - name: baseLatestImageTag
-  value: '$(baseTagSuffix)-$(latestImageIdentifier)'
+  value: '$(baseImageTagPrefix)-$(globalLatestImageTag)'
 
 stages:
 - stage: Build
-  displayName: 'Build Stage'
-
+  displayName: 'CI Stage: Integrate base image'
   jobs:
     - job: IntegrateBaseImage
-
-      displayName: 'Integrate inoversity library base image'
-
+      displayName: 'Integrate Inoversity Library base image'
       pool:
         vmImage: ubuntu-latest
-
       steps:
-
       - task: Docker@2
         displayName: 'Build & push`$(imageName)` image to CR'
         inputs:
-          command: buildAndPush
-          buildContext: '**'
           containerRegistry: '$(containerRegistryServiceConnectionName)'
-          dockerfile: '$(Build.SourcesDirectory)/$(baseImageDockerfileName)'
           repository: '$(imageName)'
+          command: 'buildAndPush'
+          Dockerfile: '$(baseImageDockerfileName)'
           tags: |
-            $(baseImageTag)
+            $(baseBuildImageTag)
             $(baseLatestImageTag)
 
     - job: CreateConfigArtifact
-
       displayName: 'Create configuration artifact'
-
       pool:
         vmImage: ubuntu-latest
-
       steps:
-
       - task: CopyFiles@2
         displayName: 'Copy config template.'
         inputs:
           sourceFolder: '$(Build.SourcesDirectory)'
-          contents: '**/global_configuration_template.json'
+          contents: '**/global_configuration_template.json' 
           targetFolder: '$(Build.StagingDirectory)'
 
       - task: PublishPipelineArtifact@1
@@ -64,95 +56,49 @@ stages:
           artifactName: '$(configTemplateArtifactName)'
           artifactType: 'pipeline'
 
-
-- stage: CDDevelopment
-
+- stage: CD_Development
+  displayName: 'CD Stage: Development'
   variables:
   - group: Development
-  - name: devImageTagSuffix
+  - name: devImageTagPrefix
     value: 'dev'
   - name: devImageTag
-    value: '$(devImageTagSuffix)-$(Build.BuildId)'
+    value: '$(devImageTagPrefix)-$(Build.BuildId)'
   - name: devLatestImageTag
-    value: '$(devImageTagSuffix)-$(latestImageIdentifier)'
-
-  displayName: 'CD Stage: Dev'
+    value: '$(devImageTagPrefix)-$(globalLatestImageTag)'
 
   jobs:
-  - deployment: Dev
+  - template: ./azure_image_deploy_jobs_template.yaml
+    parameters:
+      environment: Development
+      environmentAlias: dev
+      baseDeployImageTag: '$(baseDeployImageTag)'
 
-    displayName: 'Deploy to Development'
+- stage: CD_Testing
+  displayName: 'CD Stage: Testing'
+  variables:
+  - group: Testing
+  - name: testImageTagSuffix
+    value: 'test'
+  - name: testImageTag
+    value: '$(testImageTagSuffix)-$(Build.BuildId)'
+  - name: testLatestImageTag
+    value: '$(testImageTagSuffix)-$(globalLatestImageTag)'
 
-    environment: 'Development'
-
-    strategy:
-
-      runOnce:
-
-        deploy:
-
-          pool:
-            vmImage: ubuntu-latest
-
-          steps:
-
-          - download: none
-
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download config template artifact'
-            inputs:
-              path: '$(Build.StagingDirectory)'
-              artifactName: '$(configTemplateArtifactName)'
-
-          - task: PowerShell@2
-            displayName: 'Rename config template'
-            inputs:
-              targetType: 'inline'
-              script: Rename-Item ./global_configuration_template.json ./global_configuration.json
-              workingDirectory: '$(Build.StagingDirectory)'
-              pwsh: true
-
-          - task: FileTransform@1
-            displayName: 'Substitute config template variables'
-            inputs:
-              folderPath: '$(Build.StagingDirectory)'
-              targetFiles: 'global_configuration.json'
-              fileType: 'json'
-
-          - task: CopyFiles@2
-            displayName: 'Relocate files to source directory'
-            inputs:
-              sourceFolder: '$(Build.StagingDirectory)'
-              contents: '**'
-              targetFolder: '$(Build.SourcesDirectory)'
-
-          - task: PowerShell@2
-            displayName: 'Write base image extension Dockerfile'
-            inputs:
-              targetType: 'inline'
-              script: |
-                $dockerfile = '#syntax=docker/dockerfile:1
-
-                FROM $(containerRegistryBaseRepo)/$(imageName):$(baseImageTag)
-
-                COPY ./global_configuration.json ./global_configuration.json
-
-                EXPOSE 8000
-                
-                CMD ["./entry_point.sh"]
-                '
-                $dockerfile | Out-File $(upperLayersDockerfileName)
-              workingDirectory: '$(Build.SourcesDirectory)'
-              pwsh: true
-
-          - task: Docker@2
-            displayName: 'Build & push `$(imageName)` image to CR'
-            inputs:
-              command: buildAndPush
-              buildContext: '**'
-              dockerfile: '$(upperLayersDockerfileName)'
-              repository: '$(imageName)'
-              containerRegistry: '$(containerRegistryServiceConnectionName)'
-              tags: |
-                $(devImageTag)
-                $(devLatestImageTag)
+  jobs:
+  - template: ./azure_image_deploy_jobs_template.yaml
+    parameters:
+      environment: Testing
+      environmentAlias: test
+      baseDeployImageTag: '$(baseDeployImageTag)'
+      postBuild:
+        - task: AzureRmWebAppDeployment@4
+          displayName: 'Deploy App to Testing Environment'
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: '$(webAppAzureSubscription)'
+            appType: 'webAppContainer'
+            WebAppName: 'InoversityLibrary'
+            DockerNamespace: '$(containerRegistryLoginServer)'
+            DockerRepository: '$(imageName)'
+            DockerImageTag: '$(testImageTag)'

@@ -2,12 +2,17 @@
 
 FROM python:3.9-slim
 
-WORKDIR /app
+ENV ACCEPT_EULA=Y \
+    YOUR_ENV='production' \
+    PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_VERSION=1.2.2
 
-COPY requirements.txt requirements.txt
-
-# and populate "ocbcinst.ini" as this is where ODBC driver config sits
-ENV ACCEPT_EULA=Y
+# populate "ocbcinst.ini" as this is where ODBC driver config sits
 RUN apt-get update && apt-get install -y --no-install-recommends \
         unixodbc \
         unixodbc-dev \
@@ -38,8 +43,15 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends  \
     && apt-get update \
     && apt-get -y clean all
 
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt \
-    && apt-get remove -y gcc && apt-get -y autoremove
+RUN pip install "poetry==$POETRY_VERSION"
+
+WORKDIR /app
+
+COPY poetry.lock pyproject.toml /app/
+
+RUN poetry config virtualenvs.create false \
+  && poetry install $(test "$YOUR_ENV" == production && echo "--no-dev") --no-interaction --no-ansi \
+  && apt-get remove -y gcc && apt-get -y autoremove
 
 COPY . .
 

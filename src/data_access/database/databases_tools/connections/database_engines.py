@@ -1,11 +1,9 @@
 import pyodbc
-import functools
 import urllib.parse
 from getpass import getpass
 from urllib.parse import quote_plus as urlquote
 
 import sqlalchemy
-import pandas as pd
 
 __all__ = [
     "SQLInteract",
@@ -65,24 +63,6 @@ class SQLInteract:
                        f'Server={self.server};' \
                        f'Database={self.database_name};'
         return conn_str
-
-    @functools.lru_cache()
-    def read_query(self, query):
-        """
-        Return a dataframe resulting from the SQL query.
-        """
-
-        return pd.read_sql_query(query, self.connection)
-
-    @functools.lru_cache()
-    def query_from_dict(self, dictionary, query_key):
-        """
-        Return dataframe resulting from the SQL query with key 'query_key'
-        from a dictionary object where the value of `query_key` is an SQL
-        query.
-        """
-
-        return self.read_query(dictionary.get(query_key))
 
 
 class SQLLocalPyodbc(SQLInteract):

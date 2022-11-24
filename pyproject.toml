@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "Inoversity.Library.Microservice"
+version = "0.1.0"
+description = """ \
+    A sample project for a University Library Management System. \
+    The users of the library are classified into four categories: \
+      - Student \
+      - Staff \
+      - Alumni \
+      - Guest \
+    Users borrow documents from the library for a specified period of time. \
+    Failure to return documents on or before the stipulated date results in the user account incuring penalty charges. \
+"""
+authors = ["Mduduzi <mduduzi.mlilo@hotmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pyodbc = "^4.0.35"
+sqlalchemy = "^1.4.44"
+uvicorn = "^0.19.0"
+alembic = "1.8.1"
+pydantic = "^1.10.2"
+fastapi = "^0.87.0"
+fastapi-versioning = "^0.10.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "==5.2"
+
+[tool.poetry.group.dev.dependencies]
+commitizen = "^2.37.0"
+pre-commit = "^2.20.0"
+toml = "^0.10.2"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.4"
+tag_format = "$version"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
